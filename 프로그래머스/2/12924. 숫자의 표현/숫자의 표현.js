@@ -9,5 +9,5 @@ function solution(n) {
         }
         if(sum == n) answer+=1;
     };
-    return answer;
+    return answer;    
 }
