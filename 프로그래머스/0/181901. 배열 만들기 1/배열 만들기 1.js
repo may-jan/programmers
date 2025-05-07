@@ -1,9 +1,7 @@
 function solution(n, k) {
     var answer = [];
-    let num = 1;
-    while(k * num <= n){
-        answer.push(k * num);
-        num ++;
-    };
+    for(let i=k; i<=n; i++){
+        if(i % k == 0) answer.push(i);
+    }
     return answer;
 }
