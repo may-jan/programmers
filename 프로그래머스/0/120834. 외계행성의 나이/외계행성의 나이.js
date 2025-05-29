@@ -1,9 +1,8 @@
 function solution(age) {
     var answer = '';
-    const strAge = String(age);
-    for(let i=0; i<strAge.length; i++){
-        const charCodeNum = Number(strAge[i])+97;
-        answer += String.fromCharCode(charCodeNum)
-    }
+    const arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+    String(age).split("").forEach((num)=>{
+        answer += arr[num];
+    })
     return answer;
 }
