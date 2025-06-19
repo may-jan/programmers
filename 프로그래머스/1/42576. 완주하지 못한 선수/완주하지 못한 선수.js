@@ -1,12 +1,15 @@
 function solution(participant, completion) {
-    var answer = '';
-    participant.sort();
-    completion.sort();
-    for(let i=0; i<participant.length; i++){
-        if(participant[i] != completion[i]){
-            answer += participant[i]
-            break;
-        }
+    const map = new Map();
+    // 참여자
+    for(const name of participant){
+        map.set(name, (map.get(name) || 0)+1)
     }
-    return answer;
+    // 완주자
+    for(const name of completion){
+        map.set(name, map.get(name) - 1)
+    }
+    // 남아있는 이름 리턴
+    for(const [key, value] of map){
+        if(value >= 1) return key
+    }
 }
