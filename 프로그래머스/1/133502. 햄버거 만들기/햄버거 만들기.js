@@ -5,7 +5,7 @@ function solution(ingredient) {
         stack.push(i);
         if(stack.length >=4){
             const len = stack.length;
-            if(stack[len-4] == 1 && stack[len-3] == 2 && stack[len-2] == 3 && stack[len-1] == 1){
+            if(stack.slice(len-4).join("") == 1231){
                 answer++;
                 for (let j = 0; j < 4; j++) stack.pop();
             }
