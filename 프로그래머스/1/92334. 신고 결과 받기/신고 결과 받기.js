@@ -1,42 +1,40 @@
 function solution(id_list, report, k) {
     var answer = [];
-    const check = new Map();
-    const reportCount = new Map();
-    const stopped = [];
+    const reports = new Map(); // 신고한사람, 신고된사람 목록
+    const reportCount = new Map(); // 신고당한 횟수
+    const result = new Map(); // 받은 메일 수
     
-    id_list.forEach((user)=>{
-        check.set(user, {
-            reportedId : [],
-            stoppedId : []
-        })
-        reportCount.set(user, 0);
+    // 초기 셋팅
+    id_list.forEach((id)=>{
+        reports.set(id, new Set());
+        reportCount.set(id, 0);
+        result.set(id, 0);
     });
+    
+    // 신고 처리 (중복 제거)
     report.forEach((r)=>{
-        const [user, reported] = r.split(" ");
-        const prevReportedId = check.get(user).reportedId;
-        if(prevReportedId.includes(reported)){
-            return;
-        };
-        check.set(user, {
-            reportedId : prevReportedId ? [...prevReportedId, reported] : [reported],
-            stoppedId : []
-        });
-        reportCount.set(reported, reportCount.get(reported)+1);
-        if(reportCount.get(reported) >= k){
-            stopped.push(reported);
+        const [from, to] = r.split(" ");
+        const set = reports.get(from); // from:신고한사람
+        if(!set.has(to)){ // from이 to를 신고한적 없다면
+            set.add(to); // to를 from의 신고된사람 목록에 추가
+            reportCount.set(to, reportCount.get(to) + 1); // to가 신고당한 횟수 추가
         }
     })
-    check.forEach((user)=>{
-        const prevReportedId = user.reportedId;
-        const prevStoppedId = user.stoppedId;
-        prevReportedId?.forEach((id)=>{
-            if(stopped.includes(id)){
-                prevStoppedId.push(id);
-            }
-        });
+    
+    // 정지된 유저 찾기
+    const stopped = new Set(); // 정지된 유저 목록
+    reportCount.forEach((count, user)=>{
+        if(count >= k) stopped.add(user);
     });
-    check.forEach((user)=>{
-        answer.push(user.stoppedId.length);
+   
+    // 메일 발송 -> result에 셋팅
+    reports.forEach((set, user)=>{
+        set.forEach((reported)=>{ // user가 신고한사람 목록
+            if(stopped.has(reported)){ // 정지된 유저이면
+                result.set(user, result.get(user)+1);
+            }
+        })
     })
-    return answer;
+   
+    return id_list.map(id => result.get(id));
 }
