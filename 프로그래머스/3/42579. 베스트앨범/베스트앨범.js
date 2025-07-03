@@ -24,7 +24,7 @@ function solution(genres, plays) {
         const songs = songMap.get(genre);
         songs.sort((a, b)=> {
             if(a.play == b.play){
-                return a.idx - b.idx;
+                return a.i - b.i;
             }
             return b.play - a.play;
         });
