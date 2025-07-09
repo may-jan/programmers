@@ -1,23 +1,19 @@
 function solution(wallpaper) {
-    let positions = [];
-    wallpaper.forEach((position, idx) =>{
-        for(let i=0; i<position.length; i++){
-            if(position[i] == "#") positions.push([idx, i]);
+    let minRow = Infinity;
+    let minCol = Infinity;
+    let maxRow = -Infinity;
+    let maxCol = -Infinity;
+    for(let i=0; i<wallpaper.length; i++){
+        for(let j=0; j<wallpaper[i].length; j++){
+            if(wallpaper[i][j] == "#"){
+                minRow = Math.min(minRow, i);
+                minCol = Math.min(minCol, j);
+                maxRow = Math.max(maxRow, i);
+                maxCol = Math.max(maxCol, j);
+            }
         }
-    });
-    const start = [];
-    const end = [];
-    const result = [];
-    positions.forEach(([a,b]) => {
-        if(result[0] == undefined) result[0] = a;
-        if(result[0] > a) result[0] = a ;
-        if(result[1] == undefined) result[1] = b;
-        if(result[1] > b) result[1] = b ;
-        if(result[2] == undefined) result[2] = a+1;
-        if(result[2]-1 < a) result[2] = a+1;
-        if(result[3] == undefined) result[3] = b+1;
-        if(result[3]-1 < b) result[3] = b+1;        
-    });
-   
-    return result;
+    }
+    return [minRow, minCol, maxRow+1, maxCol+1];
+    
+    
 }
