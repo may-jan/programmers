@@ -1,9 +1,8 @@
 function solution(i, j, k) {
-    var answer = 0;
+    let arr = [];
     for(let l=i; l<=j; l++){
-        for(let m=0; m<String(l).length; m++){
-            if(String(l)[m] == k) answer++;
-        }
+        const splited = String(l).split("");
+        arr.push(...splited);
     }
-    return answer;
+    return arr.filter((a)=> a==k).length;
 }
