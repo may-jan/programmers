@@ -1,130 +1,79 @@
-function InsertMinHeap(heap, value){
+// 코드 정리
+
+function insert(heap, value, compare){
     heap.push(value);
     let index = heap.length-1;
     while(index > 0){
-        const parent = Math.floor((index-1)/2);
-        if(heap[parent] <= heap[index]) break;
-        [heap[parent], heap[index]] = [heap[index], heap[parent]];
-        index = parent;
-    }
-}
-function InsertMaxHeap(heap, value){
-    heap.push(value);
-    let index = heap.length-1;
-    while(index > 0){
-        const parent = Math.floor((index-1)/2);
-        if(heap[parent] >= heap[index]) break;
+        const parent = Math.floor((index - 1) / 2);
+        if(compare(heap[parent], heap[index])) break;
         [heap[parent], heap[index]] = [heap[index], heap[parent]];
         index = parent;
     }
 }
 
-function RemoveMinHeap(heap){
-    if(heap.length == 0) return null;
-    if(heap.length == 1) return heap.pop();
-    const min = heap[0];
-    heap[0] = heap.pop();
-    let index = 0;
-    while(true){
-        const left = (2*index) + 1;
-        const right = (2*index) + 2;
-        let smallest = index;
-        if(left < heap.length && heap[left] < heap[smallest]){
-            smallest = left;
-        }
-        if(right < heap.length && heap[right] < heap[smallest]){
-            smallest = right;
-        }
-        if(index == smallest) break;
-        [heap[index], heap[smallest]] = [heap[smallest], heap[index]];
-        index = smallest;        
-    }
-    return min;
-}
-
-function RemoveMaxHeap(heap){
-    if (heap.length === 0) return null;
-    if (heap.length === 1) return heap.pop();
-    const max = heap[0];
+function remove(heap, compare){
+    if(heap.length === 0) return null;
+    if(heap.length === 1) return heap.pop();
+    const top = heap[0];
     heap[0] = heap.pop();
     let index = 0;
     const length = heap.length;
-    while(true) {
-        const left = (2*index) + 1;
-        const right = (2*index) + 2;
-        let largest = index;
-        if (left < length && heap[left] > heap[largest]) {
-            largest = left;
-        }
-        if (right < length && heap[right] > heap[largest]) {
-            largest = right;
-        }
-        if (largest === index) break;
-        [heap[index], heap[largest]] = [heap[largest], heap[index]];
-        index = largest;
+    while(true){
+        const left = 2 * index + 1;
+        const right = 2 * index + 2;
+        let target = index;
+        if(left < length && compare(heap[left], heap[target])) target = left;
+        if(right < length && compare(heap[right], heap[target])) target = right;
+        if(target === index) break;
+        [heap[index], heap[target]] = [heap[target], heap[index]];
+        index = target;
     }
-  return max;
+    return top;
 }
 
-function insert(minHeap, maxHeap, counter, value){
-    InsertMinHeap(minHeap, value);
-    InsertMaxHeap(maxHeap, value);
-    counter.set(value, (counter.get(value) || 0) + 1);
-}
-
-function removeMinValid(minHeap, counter){
-    while (minHeap.length){
-        const val = RemoveMinHeap(minHeap);
-        if (counter.get(val)){
-            counter.set(val, counter.get(val) - 1);
-            return val;
-        }
-  }
-  return null;
-}
-
-function removeMaxValid(maxHeap, counter) {
-  while (maxHeap.length) {
-    const val = RemoveMaxHeap(maxHeap);
-    if (counter.get(val)) {
-      counter.set(val, counter.get(val) - 1);
-      return val;
+function removeValid(heap, counter, compare){
+  while(heap.length){
+    const value = remove(heap, compare);
+    if(counter.get(value)){
+      counter.set(value, counter.get(value) - 1);
+      return value;
     }
   }
   return null;
 }
 
-function solution(operations) {
-    var answer = [];
-    let minHeap = [];
-    let maxHeap = [];
-    let counter = new Map();
-    operations.forEach((o)=>{
-        const [condition, value] =  o.split(" ");
-        if(condition == 'I'){
-            insert(minHeap, maxHeap, counter, Number(value));
-        };
-        if(condition == 'D' && value == 1){
-            removeMaxValid(maxHeap, counter);
-        };
-        if(condition == 'D' && value == -1){
-            removeMinValid(minHeap, counter);            
-        };
+function cleanRoot(heap, counter, compare){
+  while(heap.length && !counter.get(heap[0])){
+    remove(heap, compare);
+  }
+}
+
+function solution(operations){
+    const minHeap = [];
+    const maxHeap = [];
+    const counter = new Map();
+    
+    operations.forEach((o) => { 
+        const [condition, value] = o.split(" ");
+        const num = Number(value);
         
-        // 최종 유효한 최댓값 찾기
-        while(maxHeap.length && !counter.get(maxHeap[0])){
-            RemoveMaxHeap(maxHeap);
+        if(condition === "I"){
+            insert(minHeap, num, (a, b) => a <= b); // 최소 힙
+            insert(maxHeap, num, (a, b) => a >= b); // 최대 힙
+            counter.set(num, (counter.get(num) || 0) + 1);
         }
-        // 최종 유효한 최솟값 찾기
-        while(minHeap.length && !counter.get(minHeap[0])){
-            RemoveMinHeap(minHeap);
+        if(condition === "D" && value === "1"){
+            removeValid(maxHeap, counter, (a, b) => a > b); // 최대값 삭제
+        }
+        if(condition === "D" && value === "-1"){
+            removeValid(minHeap, counter, (a, b) => a < b); // 최소값 삭제
         }
 
-        if(minHeap.length === 0){
-            answer = [0, 0];
-        }else{
-            answer = [maxHeap[0], minHeap[0]];
-        }
-    });
-    return answer;
+        // 유령 루트 정리
+        cleanRoot(minHeap, counter, (a, b) => a < b);
+        cleanRoot(maxHeap, counter, (a, b) => a > b);
+    })
+
+    if(minHeap.length === 0) return [0, 0];
+    return [maxHeap[0], minHeap[0]];
 }
