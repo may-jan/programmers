@@ -1,22 +1,17 @@
+// ---------- 코드 개선 ----------
 function solution(n, t, m, p) {
-    var answer = '';
-    let numStr = '';
-    for(let i=0; i<=t*m; i++){
-        const change = i.toString(n); // 1. 진법 변환
-        numStr += String(change) // 2. 스트링으로 변경 -> numStr에 붙이기
-    }
-
-    const reg = /[a-z]/;
-    
-    // 3. 튜브가 말해야하는 숫자 뽑아내기
-    for(let i=p-1; i<numStr.length; i+=m){
-        const checking = reg.test(numStr[i])
-        if(checking){
-            answer += numStr[i].toUpperCase();
-        }else{
-            answer += numStr[i];
-        }        
+    let converted = '';
+    let num = 0;
+    while(converted.length < t*m){
+        converted += num.toString(n); // 진법 변환 후 converted에 붙이기
+        num ++;
     }
     
-    return answer.slice(0,t)
+    // 튜브의 숫자 뽑아내기
+    let result = '';
+    for(let i=p-1; i<converted.length; i+=m){
+        result += converted[i].toUpperCase();
+    }
+    
+    return result.slice(0,t);
 }
