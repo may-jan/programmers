@@ -1,10 +1,10 @@
 function solution(s){
-    var left = 0
-    var right = 0;
-    if(s[0]===")") return false;
-    for(let i=0; i<s.length; i++){
-        s[i] === "(" ? left+=1 : right+=1;
-        if(left < right) return false
+    let cum = 0
+    for(let paren of s){
+        paren === '(' ? cum += 1 : cum -= 1;
+        if(cum < 0) {
+            return false
+        }
     }
-    return left !== right ? false : true 
+    return cum === 0 ? true : false; 
 }
