@@ -1,5 +1,5 @@
 function solution(numbers) {
-    const len = numbers.length;
+    const n = numbers.length;
     numbers.sort((a,b) => a-b);
-    return Math.max(numbers[0] * numbers[1], numbers[len-1] * numbers[len-2]);
+    return Math.max(numbers[0]*numbers[1], numbers[n-1]*numbers[n-2]);
 }
